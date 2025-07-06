@@ -72,11 +72,11 @@ variable "groups" {
       "steve.jobs@example.com",
     ],
     "group:prod-cde-admins" = [
-      "steve.wozniak@example.com"
+      "steve.wozniak@example.com",
       "tim.cook@example.com"
     ],
     "group:nonprod-cde-admins" = [
-      "steve.wozniak@example.com"
+      "steve.wozniak@example.com",
       "tim.cook@example.com"
     ],
     "group:everyone" = [
