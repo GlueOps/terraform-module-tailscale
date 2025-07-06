@@ -6,3 +6,7 @@ terraform {
     }
   }
 }
+
+provider "tailscale" {
+  tailnet = var.tailnet_name
+}

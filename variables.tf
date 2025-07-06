@@ -1,3 +1,8 @@
+variable "tailnet_name" {
+  description = "Name of tailnet"
+  type        = string
+}
+
 variable "cde_entities" {
   description = "List of entities that need CDE access"
   type        = list(string)
