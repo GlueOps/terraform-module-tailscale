@@ -106,6 +106,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [tailscale_acl.acl_config](https://registry.terraform.io/providers/tailscale/tailscale/0.21.1/docs/resources/acl) | resource |
+| [tailscale_dns_nameservers.nameservers](https://registry.terraform.io/providers/tailscale/tailscale/0.21.1/docs/resources/dns_nameservers) | resource |
 
 ## Inputs
 
