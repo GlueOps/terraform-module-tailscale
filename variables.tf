@@ -76,6 +76,9 @@ variable "groups" {
     "group:sysadmins" = [
       "steve.jobs@example.com",
     ],
+    "group:captain-cluster-admins" = [
+      "steve.jobs@example.com",
+    ],
     "group:prod-cde-admins" = [
       "steve.wozniak@example.com",
       "tim.cook@example.com"

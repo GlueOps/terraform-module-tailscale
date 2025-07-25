@@ -12,7 +12,8 @@ resource "tailscale_acl" "acl_config" {
         "tag:ci"        = ["autogroup:admin"],
         "tag:exitnode"  = ["autogroup:admin"],
         "tag:app-nonprod-provisioner-nodes" : ["group:nonprod-cde-admins"],
-        "tag:app-prod-provisioner-nodes" : ["group:prod-cde-admins"]
+        "tag:app-prod-provisioner-nodes" : ["group:prod-cde-admins"],
+        "tag:captain-clusters" = ["group:captain-cluster-admins"]
       },
       local.cde_tag_owners
     )
@@ -44,6 +45,11 @@ resource "tailscale_acl" "acl_config" {
             ["tag:app-nonprod-provisioner-nodes"],
             local.all_nonprod_vm_tags
           ),
+          "ip" : ["tcp:22"]
+        },
+        {
+          src = ["group:group:captain-cluster-admins"],
+          dst = ["tag:captain-clusters"],
           "ip" : ["tcp:22"]
         }
       ],
@@ -96,6 +102,12 @@ resource "tailscale_acl" "acl_config" {
             ["tag:app-nonprod-provisioner-nodes"],
             local.all_nonprod_vm_tags
           ),
+          "users" : ["autogroup:nonroot", "root"],
+        },
+        {
+          "action" : "check",
+          "src" : ["group:captain-cluster-admins", "group:sysadmins"],
+          "dst" : ["tag:captain-clusters"],
           "users" : ["autogroup:nonroot", "root"],
         }
       ],
