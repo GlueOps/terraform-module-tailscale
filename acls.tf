@@ -48,7 +48,7 @@ resource "tailscale_acl" "acl_config" {
           "ip" : ["tcp:22"]
         },
         {
-          src = ["group:group:captain-cluster-admins"],
+          src = ["group:captain-cluster-admins"],
           dst = ["tag:captain-clusters"],
           "ip" : ["tcp:22"]
         }
