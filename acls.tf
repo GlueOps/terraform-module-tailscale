@@ -13,7 +13,7 @@ resource "tailscale_acl" "acl_config" {
         "tag:exitnode"  = ["autogroup:admin"],
         "tag:app-nonprod-provisioner-nodes" : ["group:nonprod-cde-admins"],
         "tag:app-prod-provisioner-nodes" : ["group:prod-cde-admins"],
-        "tag:captain-clusters" = ["group:captain-cluster-admins"]
+        "tag:captain-clusters" : ["group:captain-cluster-admins"]
       },
       local.cde_tag_owners
     )
