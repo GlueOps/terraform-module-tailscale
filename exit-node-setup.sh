@@ -43,12 +43,20 @@ echo "Changing hostname from '$OLD_HOSTNAME' to '$NEW_HOSTNAME'..."
 # This updates /etc/hostname and tells the kernel the new name.
 hostnamectl set-hostname "$NEW_HOSTNAME"
 
+if [ $? -ne 0 ]; then
+  echo "Error: 'hostnamectl' command failed."
+  exit 1
+fi
 
 # 4. Update the /etc/hosts file to replace the old name
 # This finds all exact matches of the old hostname and replaces them.
 echo "Updating $HOSTS_FILE..."
 sed -i "s/\b$OLD_HOSTNAME\b/$NEW_HOSTNAME/g" "$HOSTS_FILE"
 
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to update $HOSTS_FILE."
+  exit 1
+fi
 
 echo ""
 echo "Hostname change complete! 🚀"
