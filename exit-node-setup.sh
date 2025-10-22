@@ -34,7 +34,6 @@ echo "Current hostname is '$OLD_HOSTNAME'."
 # 2. Check if a change is even needed
 if [ "$OLD_HOSTNAME" == "$NEW_HOSTNAME" ]; then
   echo "Hostname is already set to '$NEW_HOSTNAME'. No changes made."
-  exit 0
 fi
 
 echo "Changing hostname from '$OLD_HOSTNAME' to '$NEW_HOSTNAME'..."
