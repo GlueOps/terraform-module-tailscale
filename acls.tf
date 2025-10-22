@@ -78,29 +78,29 @@ resource "tailscale_acl" "acl_config" {
       ],
       # Grant VMs access to internet via their entity-specific exit nodes
       flatten([
-        for entity, config in var.exit_nodes_enabled : [
-          config.nonprod ? {
+        for entity in var.cde_entities : [
+          {
             src = [local.cde_vm_tags[entity].nonprod]
             dst = ["autogroup:internet"]
             ip  = ["*"]
             via = [local.cde_exit_node_tags[entity].nonprod]
-          } : null,
-          config.prod ? {
+          },
+          {
             src = [local.cde_vm_tags[entity].prod]
             dst = ["autogroup:internet"]
             ip  = ["*"]
             via = [local.cde_exit_node_tags[entity].prod]
-          } : null
+          }
         ]
       ]),
       # Sysadmin SSH access to exit nodes for maintenance
-      length(local.all_exit_node_tags) > 0 ? [
+      [
         {
           src = ["group:sysadmins"]
           dst = local.all_exit_node_tags
           ip  = ["tcp:22"]
         }
-      ] : []
+      ]
     )
 
     ssh = concat(
@@ -162,14 +162,14 @@ resource "tailscale_acl" "acl_config" {
         }
       ],
       # Sysadmin SSH check for exit nodes
-      length(local.all_exit_node_tags) > 0 ? [
+      [
         {
           "action" : "check",
           "src" : ["group:sysadmins"],
           "dst" : local.all_exit_node_tags,
           "users" : ["autogroup:nonroot", "root"],
         }
-      ] : []
+      ]
     )
   })
 }
