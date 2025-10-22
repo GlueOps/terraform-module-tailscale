@@ -95,26 +95,7 @@ variable "groups" {
   }
 }
 
-variable "exit_nodes_enabled" {
-  description = "Map of entities and environments that have exit nodes deployed. VMs will be restricted to use only their entity-specific exit nodes via the 'via' attribute in ACL grants."
-  type = map(object({
-    nonprod = optional(bool, false)
-    prod    = optional(bool, false)
-  }))
-  default = {}
 
-  # Example:
-  # exit_nodes_enabled = {
-  #   apple = {
-  #     nonprod = true
-  #     prod    = true
-  #   }
-  #   google = {
-  #     nonprod = true
-  #     prod    = false
-  #   }
-  # }
-}
 
 
 
