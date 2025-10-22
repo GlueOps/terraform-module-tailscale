@@ -14,9 +14,24 @@ locals {
     }
   }
 
+  cde_exit_node_tags = {
+    for entity in var.cde_entities : entity => {
+      nonprod = "tag:app-nonprod-cde-exitnode-${entity}"
+      prod    = "tag:app-prod-cde-exitnode-${entity}"
+    }
+  }
+
   # Flatten VM tags for easy access
   all_nonprod_vm_tags = [for entity in var.cde_entities : local.cde_vm_tags[entity].nonprod]
   all_prod_vm_tags    = [for entity in var.cde_entities : local.cde_vm_tags[entity].prod]
+
+  # Helper to get all enabled exit node tags (for sysadmin access)
+  all_exit_node_tags = flatten([
+    for entity, config in var.exit_nodes_enabled : concat(
+      config.nonprod ? [local.cde_exit_node_tags[entity].nonprod] : [],
+      config.prod ? [local.cde_exit_node_tags[entity].prod] : []
+    )
+  ])
 
   # Helper function to get VM tags based on environment and entity
   get_vm_tags_for_env = {
@@ -46,10 +61,12 @@ locals {
     merge(flatten([
       for entity in var.cde_entities : [
         {
-          "${local.cde_vm_tags[entity].nonprod}"      = ["group:nonprod-cde-admins"]
-          "${local.cde_vm_tags[entity].prod}"         = ["group:prod-cde-admins"]
-          "${local.cde_bastion_tags[entity].nonprod}" = ["group:nonprod-cde-admins"]
-          "${local.cde_bastion_tags[entity].prod}"    = ["group:prod-cde-admins"]
+          "${local.cde_vm_tags[entity].nonprod}"        = ["group:nonprod-cde-admins"]
+          "${local.cde_vm_tags[entity].prod}"           = ["group:prod-cde-admins"]
+          "${local.cde_bastion_tags[entity].nonprod}"   = ["group:nonprod-cde-admins"]
+          "${local.cde_bastion_tags[entity].prod}"      = ["group:prod-cde-admins"]
+          "${local.cde_exit_node_tags[entity].nonprod}" = ["group:nonprod-cde-admins"]
+          "${local.cde_exit_node_tags[entity].prod}"    = ["group:prod-cde-admins"]
         }
       ]
     ])...),
