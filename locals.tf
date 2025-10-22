@@ -61,13 +61,20 @@ locals {
     merge(flatten([
       for entity in var.cde_entities : [
         {
-          "${local.cde_vm_tags[entity].nonprod}"        = ["group:nonprod-cde-admins"]
-          "${local.cde_vm_tags[entity].prod}"           = ["group:prod-cde-admins"]
-          "${local.cde_bastion_tags[entity].nonprod}"   = ["group:nonprod-cde-admins"]
-          "${local.cde_bastion_tags[entity].prod}"      = ["group:prod-cde-admins"]
-          "${local.cde_exit_node_tags[entity].nonprod}" = ["group:nonprod-cde-admins"]
-          "${local.cde_exit_node_tags[entity].prod}"    = ["group:prod-cde-admins"]
+          "${local.cde_vm_tags[entity].nonprod}"      = ["group:nonprod-cde-admins"]
+          "${local.cde_vm_tags[entity].prod}"         = ["group:prod-cde-admins"]
+          "${local.cde_bastion_tags[entity].nonprod}" = ["group:nonprod-cde-admins"]
+          "${local.cde_bastion_tags[entity].prod}"    = ["group:prod-cde-admins"]
         }
+      ]
+    ])...),
+    # Exit node tag owners - only for entities with exit nodes enabled
+    merge(flatten([
+      for entity, config in var.exit_nodes_enabled : [
+        merge(
+          config.nonprod ? { "${local.cde_exit_node_tags[entity].nonprod}" = ["group:nonprod-cde-admins"] } : {},
+          config.prod ? { "${local.cde_exit_node_tags[entity].prod}" = ["group:prod-cde-admins"] } : {}
+        )
       ]
     ])...),
     # Shared resource tag owners - assign owners based on environment
