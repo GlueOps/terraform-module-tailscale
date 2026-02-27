@@ -89,13 +89,13 @@ Shared resources can be configured with three environment types:
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_tailscale"></a> [tailscale](#requirement\_tailscale) | 0.23.0 |
+| <a name="requirement_tailscale"></a> [tailscale](#requirement\_tailscale) | 0.27.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_tailscale"></a> [tailscale](#provider\_tailscale) | 0.23.0 |
+| <a name="provider_tailscale"></a> [tailscale](#provider\_tailscale) | 0.27.0 |
 
 ## Modules
 
@@ -105,8 +105,8 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [tailscale_acl.acl_config](https://registry.terraform.io/providers/tailscale/tailscale/0.23.0/docs/resources/acl) | resource |
-| [tailscale_dns_nameservers.nameservers](https://registry.terraform.io/providers/tailscale/tailscale/0.23.0/docs/resources/dns_nameservers) | resource |
+| [tailscale_acl.acl_config](https://registry.terraform.io/providers/tailscale/tailscale/0.27.0/docs/resources/acl) | resource |
+| [tailscale_dns_nameservers.nameservers](https://registry.terraform.io/providers/tailscale/tailscale/0.27.0/docs/resources/dns_nameservers) | resource |
 
 ## Inputs
 
