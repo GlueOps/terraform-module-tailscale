@@ -66,12 +66,7 @@ variable "tenants" {
     environments = list(string)
     admins       = list(string)
   }))
-  default = {
-    foobar = {
-      environments = ["nonprod"]
-      admins       = ["tim.cook@example.com"]
-    }
-  }
+  default = {}
 }
 
 variable "users" {
