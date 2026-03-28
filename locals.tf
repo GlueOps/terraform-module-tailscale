@@ -55,6 +55,30 @@ locals {
     ]
   ])
 
+  # Generate tenant tags: tag:tenant-{name}-{env}
+  tenant_tags = flatten([
+    for name, tenant in var.tenants : [
+      for env in tenant.environments : {
+        name = name
+        env  = env
+        tag  = "tag:tenant-${name}-${env}"
+      }
+    ]
+  ])
+
+  # Generate tenant groups: group:tenant-{name}-admins
+  tenant_groups = {
+    for name, tenant in var.tenants :
+    "group:tenant-${name}-admins" => tenant.admins
+  }
+
+  # Generate tenant tag owners: each tenant's admin group owns their tags
+  tenant_tag_owners = merge([
+    for entry in local.tenant_tags : {
+      "${entry.tag}" = ["group:tenant-${entry.name}-admins"]
+    }
+  ]...)
+
   # Generate tag owners map
   cde_tag_owners = merge(
     # Basic CDE tag owners
