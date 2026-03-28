@@ -15,10 +15,11 @@ resource "tailscale_acl" "acl_config" {
         "tag:app-prod-provisioner-nodes" : ["group:prod-cde-admins"],
         "tag:captain-clusters" : ["group:captain-cluster-admins"]
       },
-      local.cde_tag_owners
+      local.cde_tag_owners,
+      local.tenant_tag_owners
     )
 
-    groups = var.groups
+    groups = merge(var.groups, local.tenant_groups)
     grants = concat(
       [
         {
@@ -100,6 +101,14 @@ resource "tailscale_acl" "acl_config" {
           dst = local.all_exit_node_tags
           ip  = ["tcp:22"]
         }
+      ],
+      # Tenant admins can reach their tenant machines
+      [
+        for entry in local.tenant_tags : {
+          src = ["group:tenant-${entry.name}-admins"]
+          dst = [entry.tag]
+          ip  = ["*"]
+        }
       ]
     )
 
@@ -167,6 +176,15 @@ resource "tailscale_acl" "acl_config" {
           "action" : "check",
           "src" : ["group:sysadmins"],
           "dst" : local.all_exit_node_tags,
+          "users" : ["autogroup:nonroot", "root"],
+        }
+      ],
+      # Tenant admin SSH access to their tenant machines
+      [
+        for entry in local.tenant_tags : {
+          "action" : "check",
+          "src" : ["group:tenant-${entry.name}-admins", "group:sysadmins"],
+          "dst" : [entry.tag],
           "users" : ["autogroup:nonroot", "root"],
         }
       ]

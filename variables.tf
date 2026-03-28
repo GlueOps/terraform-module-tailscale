@@ -60,6 +60,15 @@ variable "shared_resources" {
   }
 }
 
+variable "tenants" {
+  description = "Tenant configurations with environments and admin users"
+  type = map(object({
+    environments = list(string)
+    admins       = list(string)
+  }))
+  default = {}
+}
+
 variable "users" {
   type = list(string)
   default = [
