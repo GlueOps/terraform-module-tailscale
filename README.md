@@ -12,6 +12,7 @@ A Terraform module for managing Tailscale ACL (Access Control List) configuratio
 - **Bastion Host Access**: Secure SSH access through bastion hosts for each entity
 - **Group-based Permissions**: Role-based access control with admin groups
 - **Automated Tag Management**: Automatic generation of Tailscale tags for VMs and bastions
+- **Tenant Isolation**: Isolated tenant machines with Tailscale SSH access and no lateral network movement
 
 ## Architecture
 
@@ -20,6 +21,7 @@ The module creates a comprehensive ACL configuration that includes:
 - **VM Tags**: Separate tags for prod/nonprod VMs per entity (`tag:app-{env}-cde-vm-{entity}`)
 - **Bastion Tags**: Separate tags for prod/nonprod bastions per entity (`tag:app-{env}-cde-bastion-{entity}`)
 - **Shared Resource Tags**: Configurable tags for shared infrastructure
+- **Tenant Tags**: Per-tenant, per-environment tags (`tag:tenant-{name}-{env}`)
 - **Access Rules**: Network access policies between components
 - **SSH Rules**: Secure shell access controls
 
@@ -64,6 +66,13 @@ module "tailscale_acl" {
       }
     }
   }
+
+  tenants = {
+    foobar = {
+      environments = ["nonprod"]
+      admins       = ["tenant-admin@example.com"]
+    }
+  }
 }
 ```
 
@@ -76,6 +85,16 @@ The module implements several access patterns:
 3. **Bastion-to-VM Access**: Bastions can SSH to VMs within the same entity and environment
 4. **Shared Resource Access**: VMs can access shared resources based on environment compatibility
 5. **Internet Access**: All users can access the internet through Tailscale
+6. **Tenant Isolation**: Tenant machines have no outbound tailnet access and only see themselves in `tailscale status`
+
+## Tenants
+
+Tenants are isolated machines running ad-hoc workloads (e.g., NFS, Apache) that are untrusted on the network. Each tenant gets:
+
+- **Tags**: `tag:tenant-{name}-{env}` (e.g., `tag:tenant-foobar-nonprod`)
+- **Admin Group**: `group:tenant-{name}-admins` — controls who can SSH into the tenant's machines
+- **SSH Access**: Tenant admins and sysadmins can SSH via Tailscale SSH (`action: "check"`, periodic reauth). No SSH keys to manage.
+- **Network Isolation**: Machines tagged with tenant tags have no grants as a source — they cannot initiate connections to any other device on the tailnet. They use the host's native internet connection.
 
 ## Shared Resources
 
@@ -116,6 +135,7 @@ No modules.
 | <a name="input_groups"></a> [groups](#input\_groups) | Map of group names to list of user emails | `map(list(string))` | <pre>{<br/>  "group:captain-cluster-admins": [<br/>    "steve.jobs@example.com"<br/>  ],<br/>  "group:everyone": [<br/>    "tim.cook@example.com",<br/>    "steve.jobs@example.com",<br/>    "steve.wozniak@example.com"<br/>  ],<br/>  "group:nonprod-cde-admins": [<br/>    "steve.wozniak@example.com",<br/>    "tim.cook@example.com"<br/>  ],<br/>  "group:prod-cde-admins": [<br/>    "steve.wozniak@example.com",<br/>    "tim.cook@example.com"<br/>  ],<br/>  "group:sysadmins": [<br/>    "steve.jobs@example.com"<br/>  ]<br/>}</pre> | no |
 | <a name="input_shared_resources"></a> [shared\_resources](#input\_shared\_resources) | Shared resources configuration for each entity | <pre>map(map(object({<br/>    tag         = string<br/>    description = string<br/>    environment = string<br/>    access = object({<br/>      ports = list(string)<br/>    })<br/>  })))</pre> | <pre>{<br/>  "apple": {<br/>    "metrics_prod": {<br/>      "access": {<br/>        "ports": [<br/>          "tcp:9090"<br/>        ]<br/>      },<br/>      "description": "Production metrics server for apple VMs",<br/>      "environment": "prod",<br/>      "tag": "tag:shared-metrics-prod-apple"<br/>    },<br/>    "registry_cache": {<br/>      "access": {<br/>        "ports": [<br/>          "tcp:1111",<br/>          "tcp:1112"<br/>        ]<br/>      },<br/>      "description": "Shared registry cache for apple VMs",<br/>      "environment": "global",<br/>      "tag": "tag:shared-registry-cache-apple"<br/>    },<br/>    "test_db": {<br/>      "access": {<br/>        "ports": [<br/>          "tcp:5432"<br/>        ]<br/>      },<br/>      "description": "Shared test database for nonprod apple VMs",<br/>      "environment": "nonprod",<br/>      "tag": "tag:shared-testdb-nonprod-apple"<br/>    }<br/>  }<br/>}</pre> | no |
 | <a name="input_tailnet_name"></a> [tailnet\_name](#input\_tailnet\_name) | Name of tailnet | `string` | n/a | yes |
+| <a name="input_tenants"></a> [tenants](#input\_tenants) | Tenant configurations with environments and admin users | <pre>map(object({<br/>    environments = list(string)<br/>    admins       = list(string)<br/>  }))</pre> | `{}` | no |
 | <a name="input_users"></a> [users](#input\_users) | n/a | `list(string)` | <pre>[<br/>  "tim.cook@example.com",<br/>  "steve.jobs@example.com",<br/>  "steve.wozniak@example.com"<br/>]</pre> | no |
 
 ## Outputs
