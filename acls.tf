@@ -101,7 +101,7 @@ resource "tailscale_acl" "acl_config" {
           src = ["tag:github-actions"]
           dst = ["autogroup:internet"]
           ip  = ["*"]
-          via = [local.cde_exit_node_tags[var.github_actions_exit_node_entity].prod]
+          via = ["tag:app-prod-cde-exitnode-glueops"]
         }
       ],
       # Sysadmin SSH access to exit nodes for maintenance
