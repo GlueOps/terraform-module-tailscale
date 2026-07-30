@@ -8,9 +8,10 @@ resource "tailscale_acl" "acl_config" {
 
     tagOwners = merge(
       {
-        "tag:sharedssh" = ["autogroup:admin"],
-        "tag:ci"        = ["autogroup:admin"],
-        "tag:exitnode"  = ["autogroup:admin"],
+        "tag:sharedssh"      = ["autogroup:admin"],
+        "tag:ci"             = ["autogroup:admin"],
+        "tag:exitnode"       = ["autogroup:admin"],
+        "tag:github-actions" = ["autogroup:admin"],
         "tag:app-nonprod-provisioner-nodes" : ["group:nonprod-cde-admins"],
         "tag:app-prod-provisioner-nodes" : ["group:prod-cde-admins"],
         "tag:captain-clusters" : ["group:captain-cluster-admins"]
@@ -94,6 +95,15 @@ resource "tailscale_acl" "acl_config" {
           }
         ]
       ]),
+      # Grant GitHub Actions runners internet access via a CDE prod exit node
+      [
+        {
+          src = ["tag:github-actions"]
+          dst = ["autogroup:internet"]
+          ip  = ["*"]
+          via = ["tag:app-prod-cde-exitnode-glueops"]
+        }
+      ],
       # Sysadmin SSH access to exit nodes for maintenance
       [
         {
